@@ -4,9 +4,55 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<title>One user</title>
+		<style>
+			body {
+				font-family:monospace;
+				display: flex;
+				flex-direction: column;
+				justify-content: center;
+				align-items: center;
+				height: 100vh; /* Make the body take the full height of the viewport */
+				margin: 0;
+			}
+			div {
+				text-align: center;
+				display: flex;
+				flex-direction: row;
+			}
+			h6 {
+				justify-self: center;
+				align-self: center;
+			}
+			a {
+				margin-top: 5%
+			}
+			button {
+				background-color: #007bff;
+				border: none;
+				border-radius: 4px;
+				color: #fff;
+				font-size: 1rem;
+				font-family:'Courier New', Courier, monospace;
+				padding: 0.5rem;
+				cursor: pointer;
+				width: 50vh;
+			  }
+
+			button:hover {
+				background-color: #0056b3;
+			}
+
+			button:disabled {
+				background-color: #c0c0c0;
+				cursor: not-allowed;
+			}
+		  </style>
 	</head>
 	<body>
 		<h2>Hello</h2>
-        <h4>{{.}}</h4>
+		<div>
+			<h4>Entered user is: </h4>
+			<h4>{{.}}</h4>
+		</div>
 	</body>
 </html>

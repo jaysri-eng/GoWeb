@@ -29,13 +29,13 @@ func main() {
 	http.HandleFunc("/logout", logout)
 	// cfg := mysql.Config{
 	// 	User:   os.Getenv("root"),
-	// 	Passwd: os.Getenv("jayanthsql"),
+	// 	Passwd: os.Getenv(""),
 	// 	Net:    "tcp",
 	// 	Addr:   "localhost:3306",
 	// 	DBName: "go",
 	// }
 	var err error
-	db, err = sql.Open("mysql", "root:jayanthsql@tcp(localhost:3306)/go")
+	db, err = sql.Open("mysql", "root:password@tcp(localhost:3306)/go")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -46,32 +46,16 @@ func main() {
 	fmt.Println("Connected")
 	router := mux.NewRouter()
 	router.HandleFunc("/home", func(w http.ResponseWriter, r *http.Request) {
-		tmpl, err := template.ParseFiles("template/homepage.html")
+		tmpl, err := template.ParseFiles("template/main.html")
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 		err = tmpl.Execute(w, "")
 	})
-	router.HandleFunc("/allUsers", func(w http.ResponseWriter, r *http.Request) {
-		users, err := getUser("jaya")
-		if err != nil {
-			log.Fatal(err)
-		}
-		tmpl, err := template.ParseFiles("template/allUsers.html")
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		err = tmpl.Execute(w, users)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-	})
 	router.HandleFunc("/users", func(w http.ResponseWriter, r *http.Request) {
 		user, err := allUsers()
-		tmpl, err := template.ParseFiles("template/oneUser.html")
+		tmpl, err := template.ParseFiles("template/allUsers.html")
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
