@@ -27,11 +27,11 @@
             a {
                 margin-top: 5%
             }
-            .username{
+            .item{
                 display: flex;
                 flex-direction: row;
             }
-            .password{
+            .price{
                 margin-top: 5%;
                 display: flex;
                 flex-direction: row;
@@ -66,17 +66,17 @@
 		<h2>Hello</h2>
 		<h6>Please enter the details below</h6>
         <div>
-            <form action="/postUser" method="post">
-                <div class="username">
-                    <label for="username">Username:</label>
-                    <input type="text" id="username" name="username">
+            <form action="/addItems" method="post">
+                <div class="item">
+                    <label for="item">Item:</label>
+                    <input type="text" id="item" name="item">
                 </div>
-                <div class="password">
-                    <label for="password">Password:</label>
-                    <input type="password" id="password" name="password">
+                <div class="price">
+                    <label for="price">Price:</label>
+                    <input type="number" id="price" name="price">
                 </div>
-                <a href="/postUser">
-                    <button title="button" type="submit">Get</button>
+                <a href="/addItems">
+                    <button title="button" type="submit">Add</button>
                 </a>
             </form>
         </div>

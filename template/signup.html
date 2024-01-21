@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <title>Login</title>
+    <style>
+        body {
+            background-color:#fff;
+            font-family:monospace;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh; /* Make the body take the full height of the viewport */
+            margin: 0;
+        }
+        div {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+        }
+        h6 {
+            justify-self: center;
+            align-self: center;
+        }
+        a {
+            margin-top: 5%
+        }
+        button {
+            background-color: #007bff;
+            border: none;
+            border-radius: 4px;
+            color: #fff;
+            font-size: 1rem;
+            font-family:'Courier New', Courier, monospace;
+            padding: 0.5rem;
+            cursor: pointer;
+            width: 55vh;
+            margin-top: 5%;
+          }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        button:disabled {
+            background-color: #c0c0c0;
+            cursor: not-allowed;
+        }
+        .bg {
+            box-shadow: 10px 10px 20px 0 rgba(0, 0, 0, 0.3);
+            width: 70vh;
+            height: 60vh;
+            border-radius: 20px;
+        }
+        .elements{
+            box-shadow: 10px 10px 20px 0 rgba(0, 0, 0, 0.5);
+            width: 70vh;
+            height: 60vh;
+            border-radius: 20px;
+        }
+        .input{
+            display: flex;
+            flex-direction: row;
+            margin-top: 5%;
+            margin-left: 10%;
+        }
+        .op{
+            display: flex;
+            flex-direction: row;
+            gap: 30%;
+            font-size: small;
+            margin-top: 6%;
+            margin-left: 10%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="elements">
+        <h2>Signup</h2>
+        <form action="/signup" method="post">
+            <div class="input">
+                <label for="username">Username: </label>
+                <input type="email" id="email" name="email" title="email">
+            </div>
+            <div class="input">
+                <label for="username">Password: </label>
+                <input type="password" id="password" name="password" title="password">
+            </div>
+            <a href="">
+                <button title="login" type="button">Signup</button>
+            </a>
+        </form>
+    </div>
+</body>
+
+</html>

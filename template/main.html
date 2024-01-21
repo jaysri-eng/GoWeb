@@ -7,6 +7,8 @@
   <title>Homepage</title>
   <style>
     body {
+        background-color:#fff;
+        box-shadow: 10px 10px 20px 0 rgba(0, 0, 0, 0.5);
         font-family:monospace;
         display: flex;
         flex-direction: column;
@@ -47,21 +49,32 @@
         background-color: #c0c0c0;
         cursor: not-allowed;
     }
+    .bg {
+        box-shadow: 10px 10px 20px 0 rgba(0, 0, 0, 0.3);
+        width: 70vh;
+        height: 70vh;
+        border-radius: 20px;
+    }
   </style>
 </head>
 <body>
-    <h2>Hello</h2>
-	<h5>Please select one of the options</h5>
-    <div>
-        <a href="/postUser">
-            <button title="button" type="button">Add users</button>
-        </a>
-        <a href="/users">
-            <button title="button" type="button">Get users</button>
-        </a>
-        <a href="/oneUser">
-            <button title="button" type="button">Get user</button>
-        </a>
+    <div class="bg">
+        <h2>Hello</h2>
+	    <h5>Please select one of the options</h5>
+        <div>
+            <a href="/addItems">
+                <button title="add" type="button">Add items</button>
+            </a>
+            <a href="/items">
+                <button title="get users" type="button">Show cart</button>
+            </a>
+            <a href="/oneItem">
+                <button title="get" type="button">Show item</button>
+            </a>
+            <a href="/logout">
+                <button title="logout" type="button">Logout</button>
+            </a>
+    </div>
     </div>
 </body>
 </html>
