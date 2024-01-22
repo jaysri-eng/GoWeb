@@ -76,7 +76,7 @@ func main() {
 		if username == dbUser && password == dbPwd {
 			SetCookie(username, w)
 			redirectTarget = "/home"
-			fmt.Fprintln(w, "Login succesfull!")
+			fmt.Fprintln(w, "Login successfull!")
 		} else {
 			fmt.Fprintln(w, "Login failed!")
 		}
@@ -173,13 +173,14 @@ func main() {
 		item := r.FormValue("item")
 		price := r.FormValue("price")
 		newPrice, err := strconv.ParseInt(price, 10, 64)
-		userId := r.FormValue("userId")
+		userId := r.FormValue("userid")
 		newId, err := strconv.ParseInt(userId, 10, 64)
-		fmt.Printf("Received ID: %v\n", newId)
+		// fmt.Printf("Received ID: %v\n", newId)
 		// bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
 		newItem, err := addItems(Cart{
-			Item:  item,
-			Price: newPrice,
+			Item:   item,
+			Price:  newPrice,
+			UserId: newId,
 		})
 		if err != nil {
 			log.Fatal(err)
@@ -267,7 +268,7 @@ func getOneUser(id int64) (User, error) {
 func getOneItem(id int64) (Cart, error) {
 	var cart Cart
 	row := db.QueryRow("SELECT * FROM cart WHERE id=?", id)
-	if err := row.Scan(&cart.Item, &cart.Price, &cart.UserId); err != nil {
+	if err := row.Scan(&cart.Id, &cart.Item, &cart.Price, &cart.UserId); err != nil {
 		if err == sql.ErrNoRows {
 			return cart, fmt.Errorf("getOneItem %d: no item", id)
 		}
@@ -288,7 +289,7 @@ func addUser(user User) (int64, error) {
 	return id, nil
 }
 func addItems(cart Cart) (int64, error) {
-	result, err := db.Exec("INSERT INTO cart(item, price) VALUES (?,?)", cart.Item, cart.Price)
+	result, err := db.Exec("INSERT INTO cart(item, price, user_id) VALUES (?,?,?)", cart.Item, cart.Price, cart.UserId)
 	if err != nil {
 		return 0, fmt.Errorf("addItems: %v", err)
 	}
