@@ -6,10 +6,13 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+
+	// "os"
 	"strconv"
 
 	// "os"
 	// "github.com/gin-gonic/gin"
+	// "github.com/go-sql-driver/mysql"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/securecookie"
@@ -36,19 +39,19 @@ type Cart struct {
 	UserId int64  `form:"userId" binding:"required"`
 }
 
+
 func main() {
-	http.HandleFunc("/secret", secret)
-	http.HandleFunc("/login", login)
-	http.HandleFunc("/logout", logout)
-	// cfg := mysql.Config{
-	// 	User:   os.Getenv("root"),
-	// 	Passwd: os.Getenv(""),
-	// 	Net:    "tcp",
-	// 	Addr:   "localhost:3306",
-	// 	DBName: "go",
-	// }
+	// http.HandleFunc("/secret", secret)
+	// http.HandleFunc("/login", login)
+	// http.HandleFunc("/logout", logout)
+	// username := os.Getenv("User")
+	// password := os.Getenv("Password")
+	// hostname := os.Getenv("Host")
+	// dbname := os.Getenv("Database")
 	var err error
-	db, err = sql.Open("mysql", "root:jayanthsql@tcp(localhost:3306)/Cart")
+	// dsn := username + ":" + password + "@tcp(" + hostname + ")/" + dbname
+	// db, err = sql.Open("mysql", dsn)
+	db, err = sql.Open("mysql", "root:jayanthmac@tcp(localhost:3306)/goweb")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -65,28 +68,40 @@ func main() {
 			return
 		}
 		err = tmpl.Execute(w, "")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 	})
 	router.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
-		// tmpl, err := template.ParseFiles("template/login.html")
+		if r.Method != http.MethodPost {
+			tmpl, err := template.ParseFiles("template/login.html")
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+			err = tmpl.Execute(w, nil)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+			}
+			return
+		}
+	
 		username := r.FormValue("username")
 		password := r.FormValue("password")
+		dbPwd := "jaya"
+		dbUser := "jaya"
 		redirectTarget := "/"
-		dbPwd := "jayanth"
-		dbUser := "jayanth"
 		if username == dbUser && password == dbPwd {
 			SetCookie(username, w)
 			redirectTarget = "/home"
-			fmt.Fprintln(w, "Login successfull!")
+			fmt.Fprintln(w, "Login successful!")
 		} else {
 			fmt.Fprintln(w, "Login failed!")
 		}
-		http.Redirect(w, r, redirectTarget, 80)
-		// if err != nil {
-		// 	http.Error(w, err.Error(), http.StatusInternalServerError)
-		// 	return
-		// }
-		// err = tmpl.Execute(w, "")
+		http.Redirect(w, r, redirectTarget, http.StatusSeeOther)
 	})
+	
 	router.HandleFunc("/logout", func(w http.ResponseWriter, r *http.Request) {
 		ClearCookie(w)
 		fmt.Fprintln(w, "Logout successful")
@@ -94,6 +109,10 @@ func main() {
 	})
 	router.HandleFunc("/signup", func(w http.ResponseWriter, r *http.Request) {
 		tmpl, err := template.ParseFiles("template/signup.html")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 		username := r.FormValue("username")
 		password := r.FormValue("password")
 		// bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
@@ -106,6 +125,10 @@ func main() {
 			return
 		}
 		err = tmpl.Execute(w, newUser)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 	})
 	router.HandleFunc("/forgotPassword", func(w http.ResponseWriter, r *http.Request) {
 		tmpl, err := template.ParseFiles("template/forgotPassword.html")
@@ -114,6 +137,10 @@ func main() {
 			return
 		}
 		err = tmpl.Execute(w, "")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 	})
 	router.HandleFunc("/home", func(w http.ResponseWriter, r *http.Request) {
 		tmpl, err := template.ParseFiles("template/main.html")
@@ -122,9 +149,17 @@ func main() {
 			return
 		}
 		err = tmpl.Execute(w, "")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 	})
 	router.HandleFunc("/items", func(w http.ResponseWriter, r *http.Request) {
 		cart, err := allItems()
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 		tmpl, err := template.ParseFiles("template/allItems.html")
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -145,6 +180,10 @@ func main() {
 		id := r.FormValue("id")
 		fmt.Printf("Received ID: %v\n", id)
 		newId, err := strconv.ParseInt(id, 10, 64)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 		fmt.Printf("Received ID: %v\n", newId)
 		item, err := getOneItem(newId)
 		if err != nil {
@@ -169,35 +208,79 @@ func main() {
 		}
 	})
 	router.HandleFunc("/addItems", func(w http.ResponseWriter, r *http.Request) {
-		tmpl, err := template.ParseFiles("template/addItems.html")
+		// Parse form values
 		item := r.FormValue("item")
 		price := r.FormValue("price")
-		newPrice, err := strconv.ParseInt(price, 10, 64)
 		userId := r.FormValue("userid")
+
+		// Convert price and userId to appropriate types
+		newPrice, err := strconv.ParseInt(price, 10, 64)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
 		newId, err := strconv.ParseInt(userId, 10, 64)
-		// fmt.Printf("Received ID: %v\n", newId)
-		// bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
-		newItem, err := addItems(Cart{
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		// Insert item into the cart table
+		newItem := Cart{
 			Item:   item,
 			Price:  newPrice,
 			UserId: newId,
-		})
-		if err != nil {
-			log.Fatal(err)
 		}
-		tmpl.Execute(w, newItem)
+		err = addItems(newItem)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-
+		// Respond with a success message or redirect to another page if needed
+		fmt.Fprint(w, `<script>alert("Item added to cart successfully!");</script>`)
+	})
+	// router.HandleFunc("/addItems", func(w http.ResponseWriter, r *http.Request) {
+	// 	// tmpl, err := template.ParseFiles("template/addItems.html")
+	// 	item := r.FormValue("item")
+	// 	price := r.FormValue("price")
+	// 	newPrice, err := strconv.ParseInt(price, 10, 64)
+	// 	userId := r.FormValue("userid")
+	// 	newId, err := strconv.ParseInt(userId, 10, 64)
+	// 	// fmt.Printf("Received ID: %v\n", newId)
+	// 	// bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+	// 	newItem := Cart{
+	// 		Item:   item,
+	// 		Price:  newPrice,
+	// 		UserId: newId,
+	// 	}
+	// 	err = addItems(newItem)
+	// 	if err != nil {
+	// 		log.Fatal(err)
+	// 	}
+	// 	// tmpl.Execute(w, newItem)
+	// 	if err != nil {
+	// 		http.Error(w, err.Error(), http.StatusInternalServerError)
+	// 		return
+	// 	}
+	// })
+	router.HandleFunc("/displayItems", func(w http.ResponseWriter, r *http.Request) {
+		tmpl, err := template.ParseFiles("template/itemsDisplay.html")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		tmpl.Execute(w, nil)
+	})
+	router.HandleFunc("/buyItem", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, `<script>alert("Item order has been placed!");</script>`)
 	})
 	http.ListenAndServe(":80", router)
 }
 
 func allUsers() ([]User, error) {
 	var users []User
-	rows, err := db.Query("SELECT * FROM users")
+	rows, err := db.Query("SELECT * FROM User")
 	if err != nil {
 		return nil, fmt.Errorf("users: %v", err)
 	}
@@ -216,7 +299,7 @@ func allUsers() ([]User, error) {
 }
 func allItems() ([]Cart, error) {
 	var items []Cart
-	rows, err := db.Query("SELECT * FROM cart")
+	rows, err := db.Query("SELECT * FROM Cart")
 	if err != nil {
 		return nil, fmt.Errorf("cart: %v", err)
 	}
@@ -236,7 +319,7 @@ func allItems() ([]Cart, error) {
 
 func getUser(username string) ([]User, error) {
 	var users []User
-	rows, err := db.Query("SELECT * FROM users WHERE username = ?", username)
+	rows, err := db.Query("SELECT * FROM User WHERE username = ?", username)
 	if err != nil {
 		return nil, fmt.Errorf("getUser %q: %v", username, err)
 	}
@@ -256,7 +339,7 @@ func getUser(username string) ([]User, error) {
 
 func getOneUser(id int64) (User, error) {
 	var user User
-	row := db.QueryRow("SELECT * FROM users WHERE id=?", id)
+	row := db.QueryRow("SELECT * FROM User WHERE id=?", id)
 	if err := row.Scan(&user.Id, &user.Username, &user.Password); err != nil {
 		if err == sql.ErrNoRows {
 			return user, fmt.Errorf("getOneUser %d: no user", id)
@@ -267,7 +350,7 @@ func getOneUser(id int64) (User, error) {
 }
 func getOneItem(id int64) (Cart, error) {
 	var cart Cart
-	row := db.QueryRow("SELECT * FROM cart WHERE id=?", id)
+	row := db.QueryRow("SELECT * FROM Cart WHERE id=?", id)
 	if err := row.Scan(&cart.Id, &cart.Item, &cart.Price, &cart.UserId); err != nil {
 		if err == sql.ErrNoRows {
 			return cart, fmt.Errorf("getOneItem %d: no item", id)
@@ -278,7 +361,7 @@ func getOneItem(id int64) (Cart, error) {
 }
 
 func addUser(user User) (int64, error) {
-	result, err := db.Exec("INSERT INTO users(username, password) VALUES (?,?)", user.Username, user.Password)
+	result, err := db.Exec("INSERT INTO User(username, password) VALUES (?,?)", user.Username, user.Password)
 	if err != nil {
 		return 0, fmt.Errorf("addUser: %v", err)
 	}
@@ -288,16 +371,12 @@ func addUser(user User) (int64, error) {
 	}
 	return id, nil
 }
-func addItems(cart Cart) (int64, error) {
-	result, err := db.Exec("INSERT INTO cart(item, price, user_id) VALUES (?,?,?)", cart.Item, cart.Price, cart.UserId)
+func addItems(cart Cart) error {
+	_, err := db.Exec("INSERT INTO Cart(item, price, userId) VALUES (?,?,?)", cart.Item, cart.Price, cart.UserId)
 	if err != nil {
-		return 0, fmt.Errorf("addItems: %v", err)
+		return fmt.Errorf("addItemToCart: %v", err)
 	}
-	id, err := result.LastInsertId()
-	if err != nil {
-		return 0, fmt.Errorf("addItems: %v", err)
-	}
-	return id, nil
+	return nil
 }
 
 func SetCookie(userName string, response http.ResponseWriter) {

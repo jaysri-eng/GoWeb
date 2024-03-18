@@ -45,7 +45,7 @@ func one(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, oneuser)
 }
 func add(c *gin.Context) {
-	var newuser User
+	var newuser UserDec
 	if err := c.BindJSON(&newuser); err != nil {
 		return
 	}
@@ -54,9 +54,9 @@ func add(c *gin.Context) {
 }
 
 // func main() {
-// 	router := gin.Default()
-// 	router.GET("/albums", all)
-// 	router.POST("/albums", add)
-// 	router.GET("/albums/:id", one)
-// 	router.Run("localhost:80")
+//  	router := gin.Default()
+//  	router.GET("/albums", all)
+//  	router.POST("/albums", add)
+//  	router.GET("/albums/:id", one)
+//  	router.Run("localhost:80")
 // }

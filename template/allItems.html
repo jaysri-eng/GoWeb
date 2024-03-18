@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 	<head>
         <meta charset="UTF-8">
@@ -20,4 +20,58 @@
 		<h2>Hello, added users are: </h2>
         <h4>{{.}}</h4>
 	</body>
+</html> -->
+
+
+
+<!-- template/allItems.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Items</title>
+    <style>
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .item-container {
+            border: 1px solid #ccc;
+            padding: 20px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        .item-container img {
+            max-width: 100%;
+            height: auto;
+        }
+        .add-to-cart {
+            display: inline-block;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+        .add-to-cart:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        {{ range . }}
+        <div class="item-container">
+            <h2>{{ .Item }}</h2>
+            <p>Price: ${{ .Price }}</p>
+            <p>User ID: {{ .UserId }}</p>
+            <a href="/buyItem">
+                <button title="button" type="submit" class="add-to-cart">Buy</button>
+            </a>
+        </div>
+        {{ end }}
+    </div>
+</body>
 </html>
